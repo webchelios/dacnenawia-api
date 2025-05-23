@@ -1,8 +1,12 @@
 <?php 
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = "4445";
 $DB = "dacnenawia";
 
 $conection = new mysqli( $host, $user, $password, $DB );
@@ -33,7 +37,6 @@ switch ( $method ) {
         deleteQuery( $conection, $id );
         break;
     default:
-        echo 'Metodo no existente';
         break;
 }
 
