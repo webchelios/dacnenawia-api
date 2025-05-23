@@ -1,17 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Solución definitiva para métodos HTTP
-    RewriteCond %{REQUEST_METHOD} ^(DELETE|PUT|PATCH) [NC]
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
-    
-    # Redirección estándar
+
+    # Redirige todas las solicitudes a index.php, excepto si es un archivo o directorio real
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
-
-# Forzar habilitación de métodos
-<Limit GET POST PUT DELETE OPTIONS>
-    Require all granted
-</Limit>

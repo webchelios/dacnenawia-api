@@ -2,7 +2,7 @@
 
 $host = "localhost";
 $user = "root";
-$password = "4445";
+$password = "";
 $DB = "dacnenawia";
 
 $conection = new mysqli( $host, $user, $password, $DB );
@@ -14,33 +14,31 @@ if ( $conection->connect_error ) {
 header( "Content-Type: application/json" );
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = isset( $_SERVER['PATH_INFO'] ) ? $_SERVER['PATH_INFO'] : '/';
-$findId = explode( '/', $path );
-$id = ( $path !== '/' ) ? end( $findId ) : null;
+
+$requestUri = $_SERVER['REQUEST_URI'];
+$segments = explode('/', trim($requestUri, '/')); 
+$id = is_numeric(end($segments)) ? end($segments) : null;
 
 switch ( $method ) {
     case 'GET':
-        echo 'Metodo get';
-        select( $conection );
+        select( $conection, $id );
         break;
     case 'POST':
-        echo 'Metodo post';
         insert( $conection );
         break;
     case 'PUT':
-        echo 'Metodo put';
+        update( $conection, $id );
         break;
     case 'DELETE':
-        echo 'Metodo delete';
-        delete( $conection, $id );
+        deleteQuery( $conection, $id );
         break;
     default:
         echo 'Metodo no existente';
         break;
 }
 
-function select( $conection ) {
-    $query = "SELECT * FROM products";
+function select( $conection, $id ) {
+    $query = ( $id === null ) ? "SELECT * FROM products" : "SELECT * FROM products WHERE id = $id";
     $result = $conection->query( $query );
 
     if ( $result ) {
@@ -81,9 +79,43 @@ function insert( $conection ) {
     }
 }
 
-function delete( $conection, $id ) {
-    echo 'El id a borrar es: ' . $id;
+function deleteQuery( $conection, $id ) {
+    $query = "DELETE FROM products WHERE id = $id";
+    $result = $conection->query($query);
+
+    if ( $result ) {
+        echo json_encode(array( 'message' => 'Producto eliminado' ));
+    } else {
+        echo json_encode(array( 'error' => 'Error al eliminar producto' ));
+    }
 }
 
+function update( $conection, $id ) {
+    $data = json_decode(file_get_contents( 'php://input' ), true);
+    $name = $data['name'];
+    $category = $data['category'];
+    $price = $data['price'];
+    $discount = $data['discount'];
+    $description = $data['description'];
+    $images = $data['images'];
+    $stock = $data['stock'];
+
+    $query = "UPDATE products SET
+        name = '$name',
+        category = '$category',
+        price = '$price',
+        discount = '$discount',
+        description = '$description',
+        images = '$images',
+        stock = '$stock'
+    WHERE id = $id";
+    $result = $conection->query( $query );
+
+    if ( $result ) {
+        echo json_encode(array( 'message' => 'Producto actualizado' ));
+    } else {
+        echo json_encode(array( 'error' => 'Error al actualizar producto' ));
+    }
+} 
 
 ?>
