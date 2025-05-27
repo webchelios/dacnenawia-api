@@ -19,9 +19,17 @@ header( "Content-Type: application/json" );
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-$requestUri = $_SERVER['REQUEST_URI'];
-$segments = explode('/', trim($requestUri, '/')); 
-$id = is_numeric(end($segments)) ? end($segments) : null;
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$segments = explode('/', trim($requestUri, '/'));
+
+// Si la URL es /web/dacnenawia-api/index.php/11, extrae el último segmento numérico
+$id = null;
+foreach (array_reverse($segments) as $segment) {
+    if (is_numeric($segment)) {
+        $id = $segment;
+        break;
+    }
+}
 
 switch ( $method ) {
     case 'GET':

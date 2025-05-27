@@ -1,8 +1,8 @@
 <IfModule mod_rewrite.c>
-    RewriteEngine On
+RewriteEngine On
+RewriteBase /web/dacnenawia-api/
 
-    # Redirige todas las solicitudes a index.php, excepto si es un archivo o directorio real
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 </IfModule>
